@@ -25,15 +25,8 @@ public class MyUserDetails implements UserDetailsService {
   @Autowired
   private  UserRepository userRepository;
 
-    private Collection<? extends GrantedAuthority> authorities;
+//    private Collection<? extends GrantedAuthority> authorities;
 
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return authorities;
-//    }
-//
-//    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-//        this.authorities = authorities;
-//    }
 
     public MyUserDetails(UserRepository userRepository) {
     this.userRepository = userRepository;
@@ -43,18 +36,24 @@ public class MyUserDetails implements UserDetailsService {
   @Bean
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    System.out.println("user details <<<<<<<<<<<<<<<");
+    System.out.println(">>>>>>>> MyUserDetails <<<<<< loadUserByUsername ");
     System.out.println(userRepository.toString());
      AppUser appUser = userRepository.findByUsername(username);
+
+      if (appUser == null) {
+          throw new UsernameNotFoundException("User '" + username + "' not found");
+      }
+
 
       GrantedAuthority authorities = appUser.getRoles()
               .stream().map(role -> new SimpleGrantedAuthority(role.getRolename()))
               .collect(Collectors.toList()).get(0);
 
+      System.out.println(authorities.getAuthority().lines().collect(Collectors.toList()));
 
-   if (appUser == null) {
-      throw new UsernameNotFoundException("User '" + username + "' not found");
-    }
+      System.out.println(" Granted Authorities of >>>>> " + username + " is " + authorities.toString() );
+
+
 
     return org.springframework.security.core.userdetails.User//
         .withUsername(username)//

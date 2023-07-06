@@ -16,6 +16,7 @@ import org.hibernate.service.ServiceRegistry;
 public class HibernateUtil {
     private static SessionFactory sessionFactory;
     public static SessionFactory getSessionFactory() {
+        System.out.println(">>>>>>>>>> in HibernateUtil >>>>>>>>> getSessionFactory ");
         if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
@@ -27,7 +28,7 @@ public class HibernateUtil {
                 settings.put(Environment.USER, "root");
                 settings.put(Environment.PASS, "root");
                 settings.put(Environment.DIALECT,"org.hibernate.dialect.MySQL5Dialect");
-                settings.put(Environment.SHOW_SQL, "true");
+//                settings.put(Environment.SHOW_SQL, "true");
 
 
                 settings.put(Environment.HBM2DDL_AUTO, "update");

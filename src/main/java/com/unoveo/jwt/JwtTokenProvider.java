@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 
 import javax.persistence.GeneratedValue;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +57,7 @@ public class JwtTokenProvider {
 
   @Bean
   public String createToken(String username, List<Role> appUserRoles) {
-
+    System.out.println("in JwtTokenProvider >>>>>>> createToken ");
     Claims claims = Jwts.claims().setSubject(username);
     claims.put("auth", appUserRoles.stream().map(s -> new SimpleGrantedAuthority(s.getRolename())).filter(Objects::nonNull).collect(Collectors.toList()));
 
@@ -80,21 +81,30 @@ public class JwtTokenProvider {
 
   @Bean
   public String getUsername(String token) {
+    System.out.println("JwtTokenProvider >>>>>>>>>> getUsername ");
     return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
   }
 
   @Bean
-  public String resolveToken(HttpServletRequest req) {
+  public String resolveToken(HttpServletRequest req) throws IOException {
     System.out.println("JwtTokenProvider >>>>>>>>>> resolveToken ");
+    String jwtToken = null;
+   // String body = req.getReader().lines().collect(Collectors.joining()) ;
+   // System.out.println("body ===>  "+body);
+
+
     String bearerToken = req.getHeader("Authorization");
+    System.out.println("bearer token ==> "+ bearerToken);
     if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring(7);
     }
+
     return null;
   }
 
   @Bean
   public boolean validateToken(String token) throws Exception {
+    System.out.println("JwtTokenProvider >>>>>>>>>> validateToken ");
     try {
       Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
       return true;

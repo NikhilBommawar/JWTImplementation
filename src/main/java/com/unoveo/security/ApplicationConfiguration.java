@@ -47,13 +47,9 @@ public class ApplicationConfiguration {
             @Override
             public AppUser findByUsername(String username) {
 
-                System.out.println("in application configuration >>>>>>>>> findByUsername ");
-
-
-                   Session session = HibernateUtil.getSessionFactory().openSession();
-                        return (AppUser) session.createQuery("from AppUser where username = :username").setParameter("username",username).uniqueResult();
-
-
+                System.out.println("in Application Configuration >>>>>>>>> findByUsername ");
+                      Session session = HibernateUtil.getSessionFactory().openSession();
+                      return (AppUser) session.createQuery("from AppUser where username = :username").setParameter("username",username).uniqueResult();
 
             }
 

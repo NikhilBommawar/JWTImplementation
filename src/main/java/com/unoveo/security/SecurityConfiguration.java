@@ -12,14 +12,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -41,16 +44,12 @@ public class SecurityConfiguration {
     @Autowired
     private UserRepository userRepository;
 
-//    @Bean
-//    public JwtTokenProvider getJwtTokenProvider(){
-//        return new JwtTokenProvider();
-//    }
 
-@Autowired
-    private JwtTokenFilter customFilter;
+     @Autowired
+     private JwtTokenFilter customFilter;
 
-@Autowired
-  private  MyUserDetails userDetailsService;
+    @Autowired
+      private  MyUserDetails userDetailsService;
 
 
     @Bean
@@ -60,58 +59,20 @@ public class SecurityConfiguration {
 
            http
                 .cors(cors->cors.configurationSource(corsConfigurationSource())).csrf().disable()
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/signup").hasAuthority("ADMIN"))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/user").hasAuthority("USER"))
-                   .authorizeHttpRequests(auth ->auth.requestMatchers("/**").authenticated())
-                   .formLogin(withDefaults())
-                   .httpBasic();
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/admin").hasAuthority("ADMIN"))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/guest").hasAuthority("GUEST"))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/calc").hasAuthority("ADMIN"))
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/getUser").hasAnyAuthority("ADMIN","USER"))
+                .formLogin(withDefaults())
+                .httpBasic();
 
         http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
-
 
         return http.build();
     }
 
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain calcFiler(HttpSecurity http) throws Exception{
-//
-//        http
-//                .cors(cors->cors.configurationSource(corsConfigurationSource())).csrf().disable()
-//
-//                .securityMatcher("/calc/**")
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().hasRole("ADMIN")
-//                )
-//                .formLogin(withDefaults())
-//                .exceptionHandling().accessDeniedPage("/accessDenied")
-//                .and()
-//                .httpBasic();
-//
-//        return http.build();
-//    }
 
-
-//    @Bean
-//    UserDetailsManager users(DataSource dataSource) {
-//
-//        JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
-
- /*      // Logic to create new user
-
-     BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-     UserDetails userX = User.builder().username("akshay")
-               .password(bcrypt.encode("akshay"))
-                .roles("USER")
-               .build();
-
-     users.createUser(userX);  // to save new user to datasource
-
-
-*/
-
-//       return users;
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -133,10 +94,8 @@ public class SecurityConfiguration {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
 

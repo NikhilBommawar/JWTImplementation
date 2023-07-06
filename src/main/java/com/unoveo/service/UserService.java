@@ -18,6 +18,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,7 @@ public class UserService {
 
   @Bean
   public String signin(String username, String password) throws Exception {
+    System.out.println(" in UserService >>>>>>>> signin ");
     try {
       AppUser appUser = userRepository.findByUsername(username);
 
@@ -83,7 +85,7 @@ public class UserService {
   }
 
   @Bean
-  public AppUser whoami(HttpServletRequest req) {
+  public AppUser whoami(HttpServletRequest req) throws IOException {
     System.out.println(">>>>>>>>>> find user");
     return userRepository.findByUsername(jwtTokenProvider.getUsername(jwtTokenProvider.resolveToken(req)));
   }
