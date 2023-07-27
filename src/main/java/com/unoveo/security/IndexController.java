@@ -103,7 +103,9 @@ public class IndexController {
         response.setContentType("application/json");
 
         // calling header methods for preflight
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+//        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
 
         setAccessControlHeaders(response);
         response.setStatus(HttpServletResponse.SC_OK);
@@ -215,7 +217,7 @@ public class IndexController {
 
     //for Preflight Request
     private void setAccessControlHeaders(HttpServletResponse resp) {
-        resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "POST");
     }
 

@@ -2,16 +2,25 @@ package selenium.grid;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 //import org.junit.jupiter.api.Test;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -21,102 +30,222 @@ import org.testng.annotations.Test;
 
 public class GridTest1 {
 
-
-
-    public class Selenium_MultiBrowser_Test
-    {
-        WebDriver driver;
+       WebDriver driver;
         String nodeURL;
 
-        @Parameters({"Port"})
+    public GridTest1() throws MalformedURLException {
+    }
+
+
         @BeforeMethod()
-        public void setUp(String Port) throws MalformedURLException
-        {
-            if(Port.equalsIgnoreCase("4546"))
-            {
-                nodeURL = "http://10.0.0.22:4546/wd/hub";
-                System.out.println("Chrome Browser Initiated");
-                DesiredCapabilities capabilities =  new DesiredCapabilities("chrome","114.0.5735.199",Platform.WIN10);
-                capabilities.setBrowserName("chrome");
-                capabilities.setPlatform(Platform.WINDOWS);
+        public void setUp() throws MalformedURLException {
+            String nodeURL = "http://192.168.1.8:4444/";
 
-                driver = new RemoteWebDriver(new URL(nodeURL),capabilities);
+            System.out.println("Chrome Browser Initiated");
 
-                driver.get("https://www.apple.com/");
-                driver.manage().window().maximize();
-                driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            }
+            WebDriverManager.chromedriver().setup();
 
-//            else
-//            if(Port.equalsIgnoreCase("5566"))
-//            {
-//                nodeURL = "http://10.0.0.22:5566/wd/hub";
-//                System.out.println("Firefox Browser Initiated");
-//                DesiredCapabilities capabilities1 = DesiredCapabilities.firefox();
-//                capabilities1.setBrowserName("firefox");
-//                capabilities1.setPlatform(Platform.WINDOWS);
-//
-//                driver = new RemoteWebDriver(new URL(nodeURL),capabilities1);
-//
-//                driver.get("https://www.apple.com/");
-//                driver.manage().window().maximize();
-//                driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//            }
-//
-//            else
-//
-//            if(Port.equalsIgnoreCase("4547"))
-//            {
-//                nodeURL = "http://10.0.0.22:4547/wd/hub";
-//                System.out.println("Internet Browser Initiated");
-//                DesiredCapabilities capabilities2 = DesiredCapabilities.internetExplorer();
-//                capabilities2.setBrowserName("internet explorer");
-//                capabilities2.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
-//                capabilities2.setCapability(InternetExplorerDriver.IGNORE_ZOOM_SETTING, true);
-//                capabilities2.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-//                capabilities2.setCapability("ignoreProtectedModeSettings", true);
-//                capabilities2.setCapability("nativeEvents", false);
-//                capabilities2.setCapability(InternetExplorerDriver.INITIAL_BROWSER_URL, "");
-//                capabilities2.setCapability(InternetExplorerDriver.LOG_LEVEL, "DEBUG");
-//
-//
-//                capabilities2.setPlatform(Platform.WINDOWS);
-//
-//                driver = new RemoteWebDriver(new URL(nodeURL),capabilities2);
-//
-//                driver.get("https://www.apple.com/");
-//                driver.manage().window().maximize();
-//                driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//            }
+            DesiredCapabilities capabilities =  new DesiredCapabilities();
+            ChromeOptions chromeOptions = new ChromeOptions();
+            chromeOptions.addArguments("--remote-allow-origins=*");
+
+//            capabilities.setBrowserName(chromeOptions.getBrowserName());
+            driver = new RemoteWebDriver(new URL(nodeURL),chromeOptions);
+
         }
+//
+//    @Test
+//    public void googleSite() throws InterruptedException
+//    {
+//        String url = "https://www.google.com/";
+//        String nodeURL = "http://192.168.1.8:4444/";
+//
+//        driver.get(url);
+//        WebElement googleInput = driver.findElement(By.xpath("//textarea[@id='APjFqb']"));
+//        googleInput.sendKeys("nikhil bommawar");
+//        Assert.assertEquals(url,driver.getCurrentUrl());
+//    }
+//    @Test
+//    public void appleSite() throws InterruptedException
+//    {
+//        String url = "https://www.apple.com/";
+//        String nodeURL = "http://192.168.1.8:4444/";
+//        driver.get(url);
+//        Assert.assertEquals(url,driver.getCurrentUrl());
+//    }
+//
+//    @Test
+//    public void yahooSite() throws InterruptedException
+//    {
+//        String url = "https://www.yahoo.com/";
+//        String nodeURL = "http://192.168.1.8:4444/";
+//        driver.get(url);
+//        Assert.assertEquals(url,driver.getCurrentUrl());
+//    }
 
-        @Test
-        public void appleSite() throws InterruptedException
-        {
-            try
-            {
+    @Test
+    public void testLogin(){
 
-                driver.findElement(By.xpath("//*[@id=\'ac-globalnav\']/div/ul[2]/li[3]")).click();
-                Thread.sleep(2000);
+        WebDriver driver = new ChromeDriver();
 
-                driver.findElement(By.cssSelector("#chapternav > div > ul > li.chapternav-item.chapternav-item-ipad-air > a > figure")).click();
-                Thread.sleep(2000);
+        driver.get("http://192.168.1.6:3000/");
 
-                driver.findElement(By.linkText("Why iPad")).click();
-                Thread.sleep(2000);
-            }
+        System.out.println("================= getting username password elements");
+        WebElement username = driver.findElement(By.name("username"));
+        WebElement password = driver.findElement(By.name("password"));
 
-            catch(Exception e)
-            {
-                System.out.println(e.getMessage());
-            }
-        }
+        System.out.println("================= setting username password fields");
+        username.sendKeys("nikhil");
+        password.sendKeys("nikhil");
+
+        WebElement loginButton = driver.findElement(By.id("loginBtn"));
+
+        System.out.println("================= logging by click");
+
+        loginButton.click();
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.invisibilityOf(loginButton));
+
+        String actualUrl="http://192.168.1.8:3000/calc";
+
+        junit.framework.Assert.assertEquals(actualUrl,driver.getCurrentUrl());
+
+        driver.quit();
 
 
-        @AfterMethod()
-        public void tearDown()
-        {
-            driver.quit();
-            System.out.println("Browser Closed");
-        }
-}}
+    }
+
+    @Test
+    public void testLogin2(){
+
+        WebDriver driver = new ChromeDriver();
+        driver.get("http://192.168.1.6:3000/");
+
+        WebElement username = driver.findElement(By.name("username"));
+        WebElement password = driver.findElement(By.name("password"));
+
+        username.sendKeys("nikhil");
+        password.sendKeys("nikhi");
+
+        WebElement loginButton = driver.findElement(By.id("loginBtn"));
+
+        loginButton.click();
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(20));
+
+        String actualUrl="http://192.168.1.8:3000/";
+
+        junit.framework.Assert.assertEquals(actualUrl,driver.getCurrentUrl());
+        driver.quit();
+
+    }
+    @Test
+    public void testLogin3(){
+
+        WebDriver driver = new ChromeDriver();
+        driver.get("http://192.168.1.8:3000/");
+        System.out.println("================= getting username password elements");
+        WebElement username = driver.findElement(By.name("username"));
+        WebElement password = driver.findElement(By.name("password"));
+        System.out.println("================= setting username password fields");
+
+        username.sendKeys("nikhil");
+        password.sendKeys("nikhil");
+
+        WebElement loginButton = driver.findElement(By.id("loginBtn"));
+        System.out.println("================= logging by click");
+        loginButton.click();
+
+        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.invisibilityOf(loginButton));
+
+        String actualUrl="http://192.168.1.8:3000/calc";
+
+        junit.framework.Assert.assertEquals(actualUrl,driver.getCurrentUrl());
+        driver.quit();
+
+
+    }
+
+//    @Test
+//    public void testLogin4(){
+//
+//        WebDriver driver = new ChromeDriver();
+//        driver.get("http://192.168.1.8:3000/");
+//
+//        WebElement username = driver.findElement(By.name("username"));
+//        WebElement password = driver.findElement(By.name("password"));
+//
+//        username.sendKeys("nikhil");
+//        password.sendKeys("nikhi");
+//
+//        WebElement loginButton = driver.findElement(By.id("loginBtn"));
+//
+//        loginButton.click();
+//
+//        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(20));
+//
+//        String actualUrl="http://192.168.1.8:3000/";
+//
+//        junit.framework.Assert.assertEquals(actualUrl,driver.getCurrentUrl());
+//        driver.quit();
+//
+//    }
+//    @Test
+//    public void testLogin5(){
+//
+//
+//        WebDriver driver = new ChromeDriver();
+//        driver.get("http://192.168.1.8:3000/");
+//        System.out.println("================= getting username password elements");
+//        WebElement username = driver.findElement(By.name("username"));
+//        WebElement password = driver.findElement(By.name("password"));
+//        System.out.println("================= setting username password fields");
+//
+//        username.sendKeys("nikhil");
+//        password.sendKeys("nikhil");
+//        WebElement loginButton = driver.findElement(By.id("loginBtn"));
+//
+//        System.out.println("================= logging by click");
+//
+//        loginButton.click();
+//
+//        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(20));
+//        wait.until(ExpectedConditions.invisibilityOf(loginButton));
+//
+//        String actualUrl="http://192.168.1.8:3000/calc";
+//
+//        junit.framework.Assert.assertEquals(actualUrl,driver.getCurrentUrl());
+//        driver.quit();
+//
+//
+//    }
+//
+//    @Test
+//    public void testLogin6(){
+//
+//        WebDriver driver = new ChromeDriver();
+//        driver.get("http://192.168.1.8:3000/");
+//
+//        WebElement username = driver.findElement(By.name("username"));
+//        WebElement password = driver.findElement(By.name("password"));
+//
+//        username.sendKeys("nikhil");
+//        password.sendKeys("nikhi");
+//
+//        WebElement loginButton = driver.findElement(By.id("loginBtn"));
+//
+//
+//        loginButton.click();
+//
+//        WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(20));
+//
+//        String actualUrl="http://192.168.1.8:3000/";
+//
+//        junit.framework.Assert.assertEquals(actualUrl,driver.getCurrentUrl());
+//        driver.quit();
+//
+//    }
+
+}
